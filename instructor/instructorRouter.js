@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { isValidInstructor } = require("./instructorServices.js");
-const Instructor = require("./studentModel.js");
+const Instructor = require("./instructorModel.js");
 
 router.post('/', (req, res) => {
     const instructorData = req.body
