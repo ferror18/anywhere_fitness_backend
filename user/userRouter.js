@@ -7,7 +7,6 @@ const User = require("./userModel.js");
 const { isValidReg, isValidLog } = require("./userServices.js");
 const SECRET = process.env.JWT_SECRET
 const ROUNDS = Number(process.env.BCRYPT_ROUNDS)
-console.log(typeof ROUNDS);
 
 router.post("/register", async (req, res) => {
   try {
@@ -39,6 +38,7 @@ router.post("/login", (req, res) => {
         if (user && bcryptjs.compareSync(password, user.password)) {
           const token = makeJwt(user);
           res.status(200).json({
+            id: user.id,
             email: user.email,
             token,
           });
