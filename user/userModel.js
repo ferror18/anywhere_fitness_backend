@@ -37,7 +37,6 @@ async function update({updates, id}) {
        }
        return await findById(id);
      } catch (error) {
-       console.log(updates, id, 'user');
        return error
      }
 }
