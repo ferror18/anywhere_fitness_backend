@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { isValidForPost, isValidForPatch } = require("./utilities.js");
+const { isValidForPost, isValidForPatch, isValidForGet, isValidForDelete } = require("./utilities.js");
 const Class = require("./classModel");
 
 router.post('/', async (req, res) => {
@@ -19,19 +19,31 @@ router.post('/', async (req, res) => {
 
 })
 
-router.delete("/", (req, res) => {
-    Class.remove(req.body.ClassId)
-      .then((response) =>
-        res.status(200).json({ message: "success", count: response })
-      )
-      .catch((error) => res.json({ message: error.message }));
+router.delete("/", async (req, res) => {
+    
+      try {
+        const requestData = Number(req.body.classId)
+        const [ statusCode, payload ] = await isValidForDelete(requestData)
+        if (statusCode === 200) {
+            Class.remove(payload)
+            .then((response) =>
+                res.status(statusCode).json({ message: "success", count: response }))
+            .catch((error) => res.status(statusCode).json({ message: error.message }));
+        
+        } else {
+            res.status(statusCode).json({ message: payload })
+        }
+    } catch (error) {
+        throw error
+    }
   });
 
-router.patch("/:ClassId", async (req, res) => {
+router.patch("/:classId", async (req, res) => {
     try {
-        const [ statusCode, message ] = await isValidForPatch(req.body, Number(req.params.ClassId))
+        const [ receivedData, classId ] = [ req.body, Number(req.params.classId)]
+        const [ statusCode, message ] = await isValidForPatch(receivedData, classId)
         if (statusCode === 200) {
-            const changes = {updates: req.body,ClassId: req.params.ClassId}
+            const changes = {updates: receivedData,  classId: classId}
             Class.update(changes)
                 .then((response) => res.status(200).json(response))
                 .catch((error) => res.json({ message: error.message }));
@@ -43,9 +55,19 @@ router.patch("/:ClassId", async (req, res) => {
     }
 });
 
-router.get('/:ClassId', (req, res) => {
-    Class.findById(req.params.ClassId)
-    .then((response) => res.status(200).json(response))
-    .catch((error) => res.json({ message: error.message }));
+router.get('/:ClassId', async (req, res) => {
+    try {
+        const recivedData = Number(req.params.ClassId)
+        const [ statusCode, payload ] = await isValidForGet(recivedData);
+        if (statusCode === 200) {
+            Class.findById(recivedData)
+            .then((response) => res.status(statusCode).json(response))
+            .catch((error) => res.status(statusCode).json({ message: error.message }));
+        } else {
+            res.status(statusCode).json({message: payload})
+        }
+    } catch (error) {
+        throw error
+    }
 })
 module.exports = router;

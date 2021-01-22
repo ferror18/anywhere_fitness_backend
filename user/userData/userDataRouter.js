@@ -29,7 +29,8 @@ router.delete("/", (req, res) => {
 
 router.patch("/:userId", async (req, res) => {
     try {
-        const [ statusCode, message ] = await isValidForPatch(req.body, Number(req.params.userId))
+        const [ receivedData, userId ] = [ req.body, Number(req.params.userId)]
+        const [ statusCode, message ] = await isValidForPatch(receivedData, userId)
         if (statusCode === 200) {
             const changes = {updates: req.body,userId: req.params.userId}
             User.update(changes)

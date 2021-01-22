@@ -54,7 +54,6 @@ module.exports.isValidForDelete = async function (credentials, receivedJwt) {
   } 
   const isCorrectPassword = bcryptjs.compareSync(credentials.password, user.password)
   if (!isCorrectPassword) {
-    console.log('iscor',isCorrectPassword, user);
     return [ 400, "Invalid credentials", subject]
   } else {
     return [ 200, credentials, subject];

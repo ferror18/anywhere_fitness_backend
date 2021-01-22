@@ -18,7 +18,6 @@ module.exports.isValidForPost = async function (credentials) {
   }
   for (let i = 0; i < requiredFields.length; i++) {
         if (credentials[requiredFields[i]] === undefined) {
-          console.log(!credentials[requiredFields[i]]);
           missingField = requiredFields[i]
           break 
         }

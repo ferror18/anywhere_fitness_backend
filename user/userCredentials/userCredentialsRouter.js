@@ -19,7 +19,7 @@ router.post("/register", async (req, res) => {
       await res.status(statusCode).json({ message: payload });
     }
   } catch (error) {
-    console.log(error);
+    throw error
   }
 });
 

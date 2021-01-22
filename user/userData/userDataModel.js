@@ -32,7 +32,6 @@ async function update({updates, userId}) {
        }
        return await findById(userId);
      } catch (error) {
-       console.log(updates, userId, tbname);
        return error
      }
 }

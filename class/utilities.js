@@ -1,6 +1,6 @@
 const bcryptjs = require("bcryptjs");
 const userData = require('../user/userData/userDataModel')
-const userCred = require('../user/userCredentials/userCredentialsModel')
+const Class = require('./classModel')
 
 module.exports.isValidForPost = async function (credentials) {
   let missingField = false
@@ -15,7 +15,6 @@ module.exports.isValidForPost = async function (credentials) {
   }
   for (let i = 0; i < requiredFields.length; i++) {
         if (credentials[requiredFields[i]] === undefined) {
-          console.log(!credentials[requiredFields[i]]);
           missingField = requiredFields[i]
           break 
         }
@@ -23,7 +22,6 @@ module.exports.isValidForPost = async function (credentials) {
   if (missingField) {
       return [ 400, `Missing required field:'${missingField}' `]
   }if (!Number.isInteger(credentials.owner) || !Number.isSafeInteger(credentials.owner)) {
-    console.log(credentials.owner);
     return [400, "Owner key is not an integer"]
   }
   const userDataFromdb = await userData.findById(credentials.owner)
@@ -34,17 +32,17 @@ module.exports.isValidForPost = async function (credentials) {
   }
 }
 
-  module.exports.isValidForGet = function (credentials) {
+  module.exports.isValidForGet = async function (credentials) {
   if (credentials === null || credentials === undefined) {
-    return false
-  }if (!credentials.password) {
-    return false
-  } if (!credentials.email) {
-    return false
-  } if (typeof credentials.password  !== 'string' || typeof credentials.password  !== 'string') {
-    return false
+    return [ 400, 'No classId provided']
+  }if (!Number.isInteger(credentials) || !Number.isSafeInteger(credentials)) {
+    return [ 400, 'ClassId is not a valid Integer']
+  }
+  const cls = await Class.findById(credentials)
+  if (!cls) {
+    return [ 400, 'Class does not exist, wrong Id']
   } else {
-    return true
+    return [ 200, 'Succes']
   }
 }
 
@@ -65,22 +63,16 @@ module.exports.isValidForPatch = async function (credentials, userId) {
 }
 
 
-module.exports.isValidForDelete = async function (credentials, userId) {
+module.exports.isValidForDelete = async function (credentials) {
   if (credentials === null || credentials === undefined) {
-    return [ 400, "Password is required to delete" ]
-  } if (!credentials.password) {
-    return [ 400, "Password is required to delete" ]
-  } if (typeof credentials.password  !== 'string') {
+    return [ 400, "classId is required to delete class" ]
+  } if (!Number.isInteger(credentials) || !Number.isSafeInteger(credentials)) {
     return [ 400, "Invalid format" ]
   } 
-  const user = await userCred.findById(userId);
-  if (!user) {
-    return [ 400, "User does not exist"]
-  } 
-  const isCorrectPassword = bcryptjs.compareSync(credentials.password, user.password)
-  if (!isCorrectPassword) {
-    return [ 400, "Invalid credentials"]
-  } else {
+  const cls = await Class.findById(credentials);
+  if (!cls) {
+    return [ 400, "Class does not exist"]
+  }else {
     return [ 200, credentials];
   }
 }
