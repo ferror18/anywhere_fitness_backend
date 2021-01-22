@@ -11,8 +11,8 @@ exports.up = function(knex) {
     table.integer('owner').references('userData.userId').unsigned().notNullable().onDelete('CASCADE')
     //Else
     table.integer('enrolled').defaultTo(0)
-    table.decimal('lat', 8, 6).defaultTo(50)
-    table.decimal('lon', 9, 7).defaultTo(100)
+    table.decimal('lat', 8, 6)
+    table.decimal('lon', 9, 7)
     table.decimal('cost', 5, 2).defaultTo(0)
     table.string('imageUrl').defaultTo('https://picsum.photos/1200/600')
     table.timestamps(true, true)    

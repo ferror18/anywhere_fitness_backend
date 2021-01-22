@@ -10,36 +10,36 @@ module.exports = {
 
 async function add(newUserCredentials) {
         try {
-            const [userId] = await db(tbname).insert(newUserCredentials, 'userId')
-            return await findById(userId)
+            const [classId] = await db(tbname).insert(newUserCredentials, 'classId')
+            return await findById(classId)
         } catch (error) {
             throw error
         }
 }
 
-async function findById(userId) {
-    return await db(tbname).where({userId: userId}).first()
+async function findById(classId) {
+    return await db(tbname).where({classId: classId}).first()
 }
 
 async function findBy(filter, target) {
     return await db(tbname).where(filter, target)
 }
 
-async function update({updates, userId}) {
+async function update({updates, classId}) {
     try {
         for (const iterator of Object.keys(updates)) {
-         await db(tbname).where('userId', userId).update({[iterator]: updates[iterator]})
+         await db(tbname).where('classId', classId).update({[iterator]: updates[iterator]})
        }
-       return await findById(userId);
+       return await findById(classId);
      } catch (error) {
-       console.log(updates, userId, tbname);
+       console.log(updates, classId, tbname);
        return error
      }
 }
 
-async function remove(userId) {
+async function remove(classId) {
     try {
-        return await db(tbname).where('userId', userId).del()
+        return await db(tbname).where('classId', classId).del()
       } catch (error) {
         throw error
       }
