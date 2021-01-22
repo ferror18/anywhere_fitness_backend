@@ -48,8 +48,8 @@ module.exports.isValidForPost = async function (credentials) {
 }
 
   module.exports.isValidForGet = async function (credentials) {
-  const cls = await Class.findById(credentials)
-  if (!cls) {
+  const cls = await Class.findBy({classId: credentials})
+  if (!cls.length) {
     return [ 400, 'Class does not exist, wrong Id']
   } else {
     return [ 200, 'Succes']

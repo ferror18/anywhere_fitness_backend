@@ -5,7 +5,8 @@ module.exports = {
     findById,
     findBy,
     update,
-    remove
+    remove,
+    updateEnrolled
 }
 
 async function add(newUserCredentials) {
@@ -34,6 +35,18 @@ async function update({updates, classId}) {
      } catch (error) {
        return error
      }
+}
+
+async function updateEnrolled(classId, amount) {
+  try {
+    //Get current number
+    const cls = await findById(classId)
+    console.log('currentEnrolled', cls);
+    await db(tbname).where('classId', classId).update({enrolled: cls.enrolled + amount})
+    return cls.enrolled + amount
+  }catch (error) {
+     return error
+   }
 }
 
 async function remove(classId) {

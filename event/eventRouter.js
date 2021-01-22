@@ -1,14 +1,20 @@
 const router = require("express").Router();
 const { isValidForPost, isValidForPatch, isValidForGet, isValidForDelete } = require("./utilities.js");
 const Event = require("./eventModel");
+const Class = require('../class/classModel')
 
 router.post('/', async (req, res) => {
     try {
     const requestData = req.body
     const [ statusCode, payload ] = await isValidForPost(requestData)
         if (statusCode === 200) {
+            //Find class
             Event.add(payload)
-            .then(response => res.status(statusCode).json(response))
+            .then(response => {
+                Class.updateEnrolled(payload.classId, 1)
+                .then(enrolled => res.status(statusCode).json({event: response, enrolled: enrolled}))
+                .catch((error) => res.status(statusCode).json({ message: error.message }));
+            })
             .catch((error) => res.status(statusCode).json({ message: error.message }));
         } else {
             res.status(statusCode).json({message: payload})
@@ -70,4 +76,5 @@ router.get('/:eventId', async (req, res) => {
         throw error
     }
 })
+
 module.exports = router;
