@@ -1,53 +1,46 @@
+const db = require('../../data/dbConfig.js')
 const tbname = 'userData'
-const { genericModel: {
-  genFindAll,
-  genFindBy,
-  genAdd,
-  genFindById,
-  genUpdate,
-  genRemove
-} } = require("../userUtilities")
-
-
-
-async function findAll() {
-  return await genFindAll(tbname);
-}
-async function findBy(filter) {
-  try {
-    return await genFindBy(filter, tbname)
-  } catch (error) {
-    return error
-  }
-}
-
-async function add(user) {
-  try {
-    const newUser = await genAdd(user, tbname);
-    return await newUser
-  } catch (error) {
-    return error
-  }
-}
-
-async function findById(id) {
-  return await genFindById(id, tbname)
-}
-
-async function update(info) {
-  return await genUpdate({...info, tbname})
-}
-
-async function remove(id) {
-  return await genRemove(id,tbname);
-}
-
-
 module.exports = {
-  add,
-  findAll,
-  findBy,
-  findById,
-  update,
-  remove
-};
+    add,
+    findById,
+    findBy,
+    update,
+    remove
+}
+
+async function add(newUserCredentials) {
+        try {
+            const [userId] = await db(tbname).insert(newUserCredentials, 'userId')
+            return await findById(userId)
+        } catch (error) {
+            throw error
+        }
+}
+
+async function findById(userId) {
+    return await db(tbname).where({userId: userId}).first()
+}
+
+async function findBy(filter, target) {
+    return await db(tbname).where(filter, target)
+}
+
+async function update({updates, userId}) {
+    try {
+        for (const iterator of Object.keys(updates)) {
+         await db(tbname).where('userId', userId).update({[iterator]: updates[iterator]})
+       }
+       return await findById(userId);
+     } catch (error) {
+       console.log(updates, userId, tbname);
+       return error
+     }
+}
+
+async function remove(userId) {
+    try {
+        return await db(tbname).where('userId', userId).del()
+      } catch (error) {
+        throw error
+      }
+}

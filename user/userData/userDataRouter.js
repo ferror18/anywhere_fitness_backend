@@ -1,21 +1,22 @@
 const router = require("express").Router();
-// const { isValidUser } = require("./UserServices.js");
+const { isValidForPost, isValidForPatch } = require("./utilities.js");
 const User = require("./userDataModel");
 
-router.post('/', (req, res) => {
-    const requestData = req.body
-    const [ isValid, message ] = isValidUser(requestData)
+router.post('/', async (req, res) => {
     try {
-        if (isValid) {
+    const requestData = req.body
+    const [ statusCode, message ] = await isValidForPost(requestData)
+        if (statusCode === 200) {
             User.add(requestData)
-            .then(response => res.status(200).json(response))
-            .catch((error) => res.json({ message: error.message }));
+            .then(response => res.status(statusCode).json(response))
+            .catch((error) => res.status(statusCode).json({ message: error.message }));
         } else {
-            throw message
+            res.status(statusCode).json({message: message})
         }
     } catch (error) {
-        console.log(error);
+        throw error
     }
+
 })
 
 router.delete("/", (req, res) => {
@@ -26,16 +27,20 @@ router.delete("/", (req, res) => {
       .catch((error) => res.json({ message: error.message }));
   });
 
-router.patch("/:userId", (req, res) => {
-const changes = {
-    updates: req.body,
-    userId: req.params.userId
-}
-// console.log(changes);
-// res.status(200).json('done')
-User.update(changes)
-    .then((response) => res.status(200).json(response))
-    .catch((error) => res.json({ message: error.message }));
+router.patch("/:userId", async (req, res) => {
+    try {
+        const [ statusCode, message ] = await isValidForPatch(req.body, Number(req.params.userId))
+        if (statusCode === 200) {
+            const changes = {updates: req.body,userId: req.params.userId}
+            User.update(changes)
+                .then((response) => res.status(200).json(response))
+                .catch((error) => res.json({ message: error.message }));
+        } else {
+            res.status(statusCode).json({message: message})
+        }
+    } catch (error) {
+        throw error
+    }
 });
 
 router.get('/:userId', (req, res) => {
