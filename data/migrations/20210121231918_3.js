@@ -26,7 +26,7 @@ exports.up = function(knex) {
     table.string('imageUrl').defaultTo('https://picsum.photos/1200/600')
     table.timestamps(true, true)    
   })
-  .createTable('classUser', table => {
+  .createTable('event', table => {
       //prymary
       table.increments('eventId')
       //foreign
@@ -38,7 +38,7 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
   return knex.schema
-  .dropTableIfExists('classUser')
+  .dropTableIfExists('event')
   .dropTableIfExists('hours')
   .dropTableIfExists('class')
 };
