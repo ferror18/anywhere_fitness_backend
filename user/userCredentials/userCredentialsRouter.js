@@ -1,11 +1,8 @@
 const bcryptjs = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-
 const router = require("express").Router();
 
 const User = require("./userCredentialsModel.js");
 const { isValidForRegister, isValidForLogin, makeJwt, isValidForDelete, isValidForPatch } = require("./utilities");
-const SECRET = process.env.JWT_SECRET
 const ROUNDS = Number(process.env.BCRYPT_ROUNDS)
 
 router.post("/register", async (req, res) => {
