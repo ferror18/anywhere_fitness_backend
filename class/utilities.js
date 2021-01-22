@@ -1,14 +1,24 @@
 const bcryptjs = require("bcryptjs");
 const userData = require('../user/userData/userDataModel')
 const Class = require('./classModel')
+const hrEnu = [1,2,3,4,5,6,7,8,9,10,11,12];
+const hrPer = ['AM', 'PM']
+const dayEnu = [0,1,2,3,4,5,6]
+
+
+module.exports.enu = {hrEnu,hrPer,dayEnu,}
 
 module.exports.isValidForPost = async function (credentials) {
   let missingField = false
-  // credentials.owner = Number(credentials.owner)
   const requiredFields = [
     "title",
     "description",
     "owner",
+    "day",
+    "start",
+    "end",
+    "startHper",
+    "endHper"
   ]
   if (credentials === null || credentials === undefined) {
       return [ 400, "No data sent" ]
@@ -23,6 +33,16 @@ module.exports.isValidForPost = async function (credentials) {
       return [ 400, `Missing required field:'${missingField}' `]
   }if (!Number.isInteger(credentials.owner) || !Number.isSafeInteger(credentials.owner)) {
     return [400, "Owner key is not an integer"]
+  }if (!typeof credentials.title === 'string') {
+    return [400, "Title is not an string"]
+  }if (!typeof credentials.description === 'string') {
+    return [400, "Description is not an string"]
+  }if (dayEnu.includes(credentials.day)) {
+    return [400, `Day must be one of ${dayEnu} - 1 = Monday`]
+  }if (hrPer.includes(credentials.startHper) || hrPer.includes(credentials.endHper)) {
+    return [400, `starHper or endHper must be one of ${hrPer}`]
+  }if (hrEnu.includes(credentials.end)) {
+    return [400, `start and end must be one of ${hrEnu}`]
   }
   const userDataFromdb = await userData.findById(credentials.owner)
   if (!userDataFromdb) {

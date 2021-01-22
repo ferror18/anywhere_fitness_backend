@@ -1,7 +1,6 @@
-const pgConnection = process.env.DATABASE_URL || "postgresql://postgres@localhost/anywhere_fitness";
+const pgConnection = process.env.DATABASE_URL || "postgresql://postgres@localhost/anywhereFitness";
 
-const pgConnectionTesting = process.env.HEROKU_POSTGRESQL_CHARCOAL_URL || "postgresql://postgres@localhost/anywhere_fitness_testing";
-
+const pgConnectionTesting = process.env.HEROKU_POSTGRESQL_CHARCOAL_URL;
 module.exports = {
     development: {
         client: "pg",

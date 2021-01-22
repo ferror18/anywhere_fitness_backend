@@ -1,5 +1,7 @@
-
 exports.up = function(knex) {
+  const hrEnu = [1,2,3,4,5,6,7,8,9,10,11,12];
+  const hrPer = ['AM', 'PM']
+  const dayEnu = [0,1,2,3,4,5,6]
   return knex.schema
   .createTable('class', table => {
     //primary
@@ -8,10 +10,12 @@ exports.up = function(knex) {
     table.string('title').notNullable()
     table.text('description').notNullable()
     //Day of week starting monday = 1
-    table.enu('day', [1,2,3,4,5,6,7]).notNullable()
+    table.enu('day', dayEnu).notNullable()
     //times
-    table.time('start').notNullable()
-    table.time('end').notNullable()
+    table.enu('start', hrEnu).notNullable()
+    table.enu('startHper', hrPer).notNullable()
+    table.enu('end', hrEnu).notNullable()
+    table.enu('endHper', hrPer).notNullable()
     //Foreign
     table.integer('owner').references('userData.userId').unsigned().notNullable().onDelete('CASCADE')
     //Else
@@ -35,5 +39,6 @@ exports.up = function(knex) {
 exports.down = function(knex) {
   return knex.schema
   .dropTableIfExists('classUser')
+  .dropTableIfExists('hours')
   .dropTableIfExists('class')
 };
