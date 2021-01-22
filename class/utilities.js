@@ -62,10 +62,16 @@ module.exports.isValidForPost = async function (credentials) {
   }
 }
 
-  module.exports.isValidForGet = async function (credentials) {
+module.exports.isValidForGet = async function (credentials) {
   if (credentials === null || credentials === undefined) {
     return [ 400, 'No classId provided']
-  }if (!Number.isInteger(credentials) || !Number.isSafeInteger(credentials)) {
+  }
+  const turnToNum = [ ,
+    "classId",
+    "userId",
+  ]
+  turnToNum.forEach(field => credentials[field] = Number(credentials[field]))
+  if (!Number.isInteger(credentials) || !Number.isSafeInteger(credentials)) {
     return [ 400, 'ClassId is not a valid Integer']
   }
   const cls = await Class.findById(credentials)
@@ -74,6 +80,43 @@ module.exports.isValidForPost = async function (credentials) {
   } else {
     return [ 200, 'Succes']
   }
+}
+
+module.exports.isValidForGetByFilter = async function (filter, target ) {
+  const validFilters = [
+    "title",
+    "description",
+    "owner",
+    "day",
+    "start",
+    "end",
+    "startHper",
+    "endHper"
+  ]
+  const turnToNum = [ 
+    "classId",
+    "owner",
+    "day",
+    "start",
+    "end"
+  ]
+  if (filter === null || filter === undefined) { //Check filter is not null or undefined
+    return [ 400, 'No filter provided']
+  }if (target === null || target === undefined) {//Check target is not null or undefined
+    return [ 400, 'No target provided']
+  }if (!validFilters.includes(filter)) { //Check filter is a valid filter
+    return [ 400, `Invalid filter: ${filter}.  Valid filters --> '${validFilters}'`]
+  }if (!turnToNum.includes(filter)) { //Check if target 'should' be an integer
+    target = Number(target)
+    if (!Number.isInteger(target) || !Number.isSafeInteger(target)) { //Check that target actually is an integer
+      return [ 400, `${filter} is not a valid Integer`]
+    }
+  } else {
+    if (typeof target !== 'string') {
+      return [ 400, `${filter} type values should be strings`]
+    }
+  }
+    return [ 200, 'Succes']
 }
 
 module.exports.isValidForPatch = async function (credentials, userId) {

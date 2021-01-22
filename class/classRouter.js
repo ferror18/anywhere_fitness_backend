@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { isValidForPost, isValidForPatch, isValidForGet, isValidForDelete } = require("./utilities.js");
+const { isValidForPost, isValidForPatch, isValidForGet, isValidForDelete, isValidForGetByFilter } = require("./utilities.js");
 const Class = require("./classModel");
 
 router.post('/', async (req, res) => {
@@ -61,6 +61,22 @@ router.get('/:ClassId', async (req, res) => {
         const [ statusCode, payload ] = await isValidForGet(recivedData);
         if (statusCode === 200) {
             Class.findById(recivedData)
+            .then((response) => res.status(statusCode).json(response))
+            .catch((error) => res.status(statusCode).json({ message: error.message }));
+        } else {
+            res.status(statusCode).json({message: payload})
+        }
+    } catch (error) {
+        throw error
+    }
+})
+
+router.get('/filter/:filter/:target', async (req, res) => {
+    try {
+        const [ filter, target ] = [ req.params.filter, req.params.target ]
+        const [ statusCode, payload ] = await isValidForGetByFilter(filter, target);
+        if (statusCode === 200) {
+            Class.findBy(filter, target)
             .then((response) => res.status(statusCode).json(response))
             .catch((error) => res.status(statusCode).json({ message: error.message }));
         } else {
