@@ -20,6 +20,13 @@ module.exports.isValidForPost = async function (credentials) {
     "startHper",
     "endHper"
   ]
+  const turnToNum = [ ,
+    "start",
+    "end",
+    "owner"
+  ]
+
+  turnToNum.forEach(field => credentials[field] = Number(credentials[field]))
   if (credentials === null || credentials === undefined) {
       return [ 400, "No data sent" ]
   }
@@ -37,18 +44,21 @@ module.exports.isValidForPost = async function (credentials) {
     return [400, "Title is not an string"]
   }if (!typeof credentials.description === 'string') {
     return [400, "Description is not an string"]
-  }if (dayEnu.includes(credentials.day)) {
-    return [400, `Day must be one of ${dayEnu} - 1 = Monday`]
-  }if (hrPer.includes(credentials.startHper) || hrPer.includes(credentials.endHper)) {
-    return [400, `starHper or endHper must be one of ${hrPer}`]
-  }if (hrEnu.includes(credentials.end)) {
-    return [400, `start and end must be one of ${hrEnu}`]
+  }if (!dayEnu.includes(credentials.day)) {
+    console.log(credentials.day);
+    return [400, `Day must be one of '${dayEnu}' where 1 = Monday etc`]
+  }if (!hrPer.includes(credentials.startHper) || !hrPer.includes(credentials.endHper)) {
+    console.log(credentials.startHper);
+    return [400, `starHper or endHper must be one of '${hrPer}'`]
+  }if (!hrEnu.includes(credentials.end) || !hrEnu.includes(credentials.start)) {
+    console.log(credentials.startHper);
+    return [400, `start and end must be one of '${hrEnu}'`]
   }
   const userDataFromdb = await userData.findById(credentials.owner)
   if (!userDataFromdb) {
     return [400, "Owner does not exist"]
   } else {
-      return [ 200, "success"]
+      return [ 200, credentials]
   }
 }
 

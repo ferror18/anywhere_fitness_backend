@@ -5,13 +5,13 @@ const Class = require("./classModel");
 router.post('/', async (req, res) => {
     try {
     const requestData = req.body
-    const [ statusCode, message ] = await isValidForPost(requestData)
+    const [ statusCode, payload ] = await isValidForPost(requestData)
         if (statusCode === 200) {
-            Class.add(requestData)
+            Class.add(payload)
             .then(response => res.status(statusCode).json(response))
             .catch((error) => res.status(statusCode).json({ message: error.message }));
         } else {
-            res.status(statusCode).json({message: message})
+            res.status(statusCode).json({message: payload})
         }
     } catch (error) {
         throw error
