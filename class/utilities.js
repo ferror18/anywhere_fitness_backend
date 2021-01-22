@@ -73,6 +73,12 @@ module.exports.isValidForPatch = async function (credentials, userId) {
     return [ 400, "No userId provided" ]
   }if (!Number.isInteger(userId) || !Number.isSafeInteger(userId)) {
     return [ 400, "userId is not a valid integer" ]
+  }if (dayEnu.includes(credentials.day)) {
+    return [400, `Day must be one of ${dayEnu} - 1 = Monday`]
+  }if (hrPer.includes(credentials.startHper) || hrPer.includes(credentials.endHper)) {
+    return [400, `starHper or endHper must be one of ${hrPer}`]
+  }if (hrEnu.includes(credentials.end)) {
+    return [400, `start and end must be one of ${hrEnu}`]
   }
   const user = await userData.findById(userId);
   if (!user) {
