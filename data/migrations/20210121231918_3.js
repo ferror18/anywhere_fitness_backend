@@ -7,12 +7,12 @@ exports.up = function(knex) {
     //Required
     table.string('title').notNullable()
     table.text('description').notNullable()
-    table.integer('enrolled').notNullable().defaultTo(0)
     //Foreign
     table.integer('owner').references('userData.userId').unsigned().notNullable().onDelete('CASCADE')
     //Else
-    table.decimal('lat', 8, 6)
-    table.decimal('lon', 9, 7)
+    table.integer('enrolled').defaultTo(0)
+    table.decimal('lat', 8, 6).defaultTo(50)
+    table.decimal('lon', 9, 7).defaultTo(100)
     table.decimal('cost', 5, 2).defaultTo(0)
     table.string('imageUrl').defaultTo('https://picsum.photos/1200/600')
     table.timestamps(true, true)    

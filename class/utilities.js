@@ -5,13 +5,9 @@ const userCred = require('../user/userCredentials/userCredentialsModel')
 module.exports.isValidForPost = async function (credentials) {
   let missingField = false
   const requiredFields = [
-    "userId",
-    "firstName",
-    "lastName",
-    "displayedName",
-    "phone",
-    "address",
-    "isInstructor"
+    "title",
+    "description",
+    "owner",
   ]
   if (credentials === null || credentials === undefined) {
       return [ 400, "No data sent" ]
@@ -25,12 +21,10 @@ module.exports.isValidForPost = async function (credentials) {
   }
   if (missingField) {
       return [ 400, `Missing required field:'${missingField}' `]
+  }if (Number.isInteger(credentials.owner) || Number.isSafeInteger(credentials.owner)) {
+    return [400, "Owner key is not an integer"]
   }
-  const userCredential = await userCred.findById(credentials.userId)
-  if (!userCredential) {
-    return [400, "User does not exist"]
-  }
-  const userDataFromdb = await userData.findById(credentials.userId)
+  const userDataFromdb = await userData.findById(credentials.owner)
   if (userDataFromdb) {
     return [400, "User already exists"]
   } else {
