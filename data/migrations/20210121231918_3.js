@@ -17,7 +17,7 @@ exports.up = function(knex) {
     table.string('imageUrl').defaultTo('https://picsum.photos/1200/600')
     table.timestamps(true, true)    
   })
-  .createTable('classHours', table => {
+  .createTable('hours', table => {
       // primary fooreign to class
       table.integer('hoursId').references('class.classId').unsigned().primary().notNullable().onDelete('CASCADE')
       //Day of week starting monday = 1
@@ -39,6 +39,6 @@ exports.up = function(knex) {
 exports.down = function(knex) {
   return knex.schema
   .dropTableIfExists('classUser')
-  .dropTableIfExists('classHours')
+  .dropTableIfExists('hours')
   .dropTableIfExists('class')
 };
