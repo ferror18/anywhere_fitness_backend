@@ -3,15 +3,16 @@ const jwt = require("jsonwebtoken");
 
 const router = require("express").Router();
 
-const User = require("./userModel.js");
-const { isValidReg, isValidLog } = require("./userServices.js");
+const User = require("./userCredentialsModel.js");
+const { isValidCredentials, isValidLoging } = require("../userUtilities");
 const SECRET = process.env.JWT_SECRET
 const ROUNDS = Number(process.env.BCRYPT_ROUNDS)
 
 router.post("/register", async (req, res) => {
   try {
+    // console.log(require("../userUtilities"));
     const userMatch = await User.findBy({ email: req.body.email });
-    const [statusCode, payload] = isValidReg(req.body, !userMatch.length);
+    const [statusCode, payload] = isValidCredentials(req.body, !userMatch.length);
     if (statusCode === 201) {
       payload.password = bcryptjs.hashSync(payload.password, ROUNDS);
       const newUser = await User.add(payload);
@@ -31,7 +32,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
     console.log(req.body);
-  if (isValidLog(req.body)) {
+  if (isValidLoging(req.body)) {
     User.findBy({ email: email })
       .then(([user]) => {
         // compare the password the hash stored in the database

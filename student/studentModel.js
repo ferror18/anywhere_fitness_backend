@@ -1,6 +1,6 @@
 const { isValidUser } = require('./studentServices')
 const db = require('../data/dbConfig.js')
-const dbname = 'student'
+const tbname = 'student'
 module.exports = {
     add,
     findById,
@@ -12,7 +12,7 @@ module.exports = {
 async function add(newStudent) {
     if (isValidUser(newStudent)) {
         try {
-            const [student_id] = await db(dbname).insert(newStudent, 'student_id')
+            const [student_id] = await db(tbname).insert(newStudent, 'student_id')
             return await findById(student_id)
         } catch (error) {
             throw error
@@ -23,28 +23,28 @@ async function add(newStudent) {
 }
 
 async function findById(student_id) {
-    return await db(dbname).where({student_id: student_id}).first()
+    return await db(tbname).where({student_id: student_id}).first()
 }
 
 async function findBy(filter, target) {
-    return await db(dbname).where(filter, target)
+    return await db(tbname).where(filter, target)
 }
 
 async function update({updates, student_id}) {
     try {
         for (const iterator of Object.keys(updates)) {
-         await db(dbname).where('student_id', '=', student_id).update({[iterator]: updates[iterator]})
+         await db(tbname).where('student_id', '=', student_id).update({[iterator]: updates[iterator]})
        }
        return await findById(student_id);
      } catch (error) {
-       console.log(updates, student_id, dbname);
+       console.log(updates, student_id, tbname);
        return error
      }
 }
 
 async function remove(student_id) {
     try {
-        return await db(dbname).where('student_id', student_id).del()
+        return await db(tbname).where('student_id', student_id).del()
       } catch (error) {
         throw error
       }

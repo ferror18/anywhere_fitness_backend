@@ -1,13 +1,13 @@
 const router = require("express").Router();
-const { isValidInstructor } = require("./instructorServices.js");
-const Instructor = require("./instructorModel.js");
-// ToDo DRY instructor and student models 
+// const { isValidUser } = require("./UserServices.js");
+const User = require("./userDataModel");
+
 router.post('/', (req, res) => {
-    const instructorData = req.body
-    const [ isValid, message ] = isValidInstructor(instructorData)
+    const requestData = req.body
+    const [ isValid, message ] = isValidUser(requestData)
     try {
         if (isValid) {
-            Instructor.add(instructorData)
+            User.add(requestData)
             .then(response => res.status(200).json(response))
             .catch((error) => res.json({ message: error.message }));
         } else {
@@ -19,25 +19,27 @@ router.post('/', (req, res) => {
 })
 
 router.delete("/", (req, res) => {
-    Instructor.remove(req.body.instructor_id)
+    User.remove(req.body.userId)
       .then((response) =>
         res.status(200).json({ message: "success", count: response })
       )
       .catch((error) => res.json({ message: error.message }));
   });
 
-router.patch("/:instructor_id", (req, res) => {
+router.patch("/:userId", (req, res) => {
 const changes = {
     updates: req.body,
-    instructor_id: req.params.instructor_id
+    userId: req.params.userId
 }
-Instructor.update(changes)
+// console.log(changes);
+// res.status(200).json('done')
+User.update(changes)
     .then((response) => res.status(200).json(response))
     .catch((error) => res.json({ message: error.message }));
 });
 
-router.get('/:instructor_id', (req, res) => {
-    Instructor.findById(req.params.instructor_id)
+router.get('/:userId', (req, res) => {
+    User.findById(req.params.userId)
     .then((response) => res.status(200).json(response))
     .catch((error) => res.json({ message: error.message }));
 })

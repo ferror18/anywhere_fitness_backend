@@ -8,17 +8,15 @@ const PORT  = process.env.PORT
 
 
 //routers
-const userRouter = require('./user/userRouter.js');
-const studentRouter = require('./student/studentRouter.js');
-const instructorRouter = require('./instructor/instructorRouter.js');
+const userCredentialsRouter = require('./user/userCredentials/userCredentialsRouter.js');
+const userDataRouter = require('./user/userData/userDataRouter.js');
 
 //middleware
 server.use(helmet());
 server.use(cors());
 server.use(express.json());
-server.use('/', userRouter);
-server.use('/student', studentRouter);
-server.use('/instructor', instructorRouter);
+server.use('/', userCredentialsRouter);
+server.use('/user', userDataRouter);
 server.get('/', (req, res) => res.status(200).send('<h1>API is available</h1>'));
 
 //Server Listen
