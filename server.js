@@ -11,7 +11,6 @@ const PORT  = process.env.PORT
 const userCredentialsRouter = require('./user/userCredentials/userCredentialsRouter.js');
 const userDataRouter = require('./user/userData/userDataRouter.js');
 const classRouter = require('./class/classRouter');
-const hoursRouter = require('./hours/hoursRouter')
 
 //middleware
 server.use(helmet());
@@ -20,7 +19,6 @@ server.use(express.json());
 server.use('/', userCredentialsRouter);
 server.use('/user', userDataRouter);
 server.use('/class', classRouter);
-server.use('/hours', hoursRouter);
 server.get('/', (req, res) => res.status(200).send('<h1>API is available</h1>'));
 
 //Server Listen
