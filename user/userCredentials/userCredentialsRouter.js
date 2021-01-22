@@ -3,17 +3,16 @@ const jwt = require("jsonwebtoken");
 
 const router = require("express").Router();
 
-const User = require("./userModel.js");
-const { isValidReg, isValidLog } = require("./userServices.js");
+const User = require("./userCredentialsModel.js");
+const { isValidForRegister, isValidForLogin, makeJwt, isValidForDelete, isValidForPatch } = require("./utilities");
 const SECRET = process.env.JWT_SECRET
 const ROUNDS = Number(process.env.BCRYPT_ROUNDS)
-console.log(typeof ROUNDS);
 
 router.post("/register", async (req, res) => {
   try {
     const userMatch = await User.findBy({ email: req.body.email });
-    const [statusCode, payload] = isValidReg(req.body, !userMatch.length);
-    if (statusCode === 201) {
+    const [statusCode, payload] = isValidForRegister(req.body, !userMatch.length);
+    if (statusCode === 200) {
       payload.password = bcryptjs.hashSync(payload.password, ROUNDS);
       const newUser = await User.add(payload);
       await res
@@ -31,14 +30,14 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
-    console.log(req.body);
-  if (isValidLog(req.body)) {
+  if (isValidForLogin(req.body)) {
     User.findBy({ email: email })
       .then(([user]) => {
         // compare the password the hash stored in the database
         if (user && bcryptjs.compareSync(password, user.password)) {
           const token = makeJwt(user);
           res.status(200).json({
+            userId: user.userId,
             email: user.email,
             token,
           });
@@ -57,31 +56,40 @@ router.post("/login", (req, res) => {
   }
 });
 
-router.patch("/user", async (req, res) => {
-  const decoded = await jwt.verify(req.headers.authorization, SECRET);
-  const payload = req.body;
-  payload.password = await bcryptjs.hashSync(payload.password, ROUNDS);
-  User.update({ updates: await payload, id: await decoded.subject })
-    .then((response) => res.status(200).json(response))
-    .catch((error) => res.json({ message: error.message }));
+router.patch("/cred", async (req, res) => {
+  try {
+    const decoded = await jwt.verify(req.headers.authorization, SECRET);
+    const payload = req.body;
+    //validate
+    const [ statusCode, message ] = await isValidForPatch(payload, decoded.subject)
+    if (statusCode === 200) {
+      //hash password
+      payload.password = bcryptjs.hashSync(payload.password, ROUNDS);
+      //Make updates
+      User.update({ updates: payload, userId: decoded.subject })
+        .then((response) => res.status(statusCode).json({message:message, data: response}))
+        .catch((error) => res.status(statusCode).json({ message: error.message }));
+    } else {
+      res.status(statusCode).json({message:message})
+    }
+  } catch (error) {
+    throw error
+  }
 });
 
-router.delete("/user", (req, res) => {
-  const decoded = jwt.verify(req.headers.authorization, SECRET);
+router.delete("/cred", async (req, res) => {
+  const decoded = await jwt.verify(req.headers.authorization, SECRET);
+  const [statusCode, payload] = await isValidForDelete(req.body, decoded.subject);
+    if (statusCode === 200) {
   User.remove(decoded.subject)
     .then((response) =>
-      res.status(200).json({ message: "success", count: response })
+      res.status(statusCode).json({ message: "success", count: response })
     )
-    .catch((error) => res.json({ message: error.message }));
+    .catch((error) => res.status(statusCode).json({ message: error.message }));
+} else {
+  res.status(statusCode).json({message: payload})
+}
 });
 
-function makeJwt(user) {
-  const payload = {
-    subject: user.id,
-  };
-  const options = {
-    expiresIn: "24h",
-  };
-  return jwt.sign(payload, SECRET, options);
-}
+
 module.exports = router;
