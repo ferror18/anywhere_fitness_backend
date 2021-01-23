@@ -42,9 +42,15 @@ module.exports.isValidForPost = async function (credentials) {
   const user = await userData.findById(credentials.userId)
   if (!user) {
     return [400, "User does not exist"]
-  } else {
-      return [ 200, credentials]
   }
+  const evt = await Event.findBy('userId', credentials.userId)
+  console.log(evt.length,evt, credentials.classId);
+  if (evt.length > 0) {
+    if (evt[0].classId === credentials.classId) {
+      return [400, "User is already enrolled in that class"]
+    }
+  }
+    return [ 200, credentials]
 }
 
   module.exports.isValidForGet = async function (credentials) {

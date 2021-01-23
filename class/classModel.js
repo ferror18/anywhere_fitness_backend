@@ -41,7 +41,7 @@ async function updateEnrolled(classId, amount) {
   try {
     //Get current number
     const cls = await findById(classId)
-    console.log('currentEnrolled', cls);
+    // console.log('currentEnrolled', cls);
     await db(tbname).where('classId', classId).update({enrolled: cls.enrolled + amount})
     return cls.enrolled + amount
   }catch (error) {
