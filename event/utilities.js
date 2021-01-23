@@ -56,6 +56,10 @@ module.exports.isValidForPost = async function (credentials) {
   }
 }
 
+module.exports.isValidForGetByFilter = async function(filter, target) {
+  return [ 200, "succes"]
+}
+
 module.exports.isValidForPatch = async function (credentials, userId) {
   if (credentials === null || credentials === undefined || (Object.keys(credentials).length === 0 && credentials.constructor === Object)) {
     return [ 400, "No changes requested" ]

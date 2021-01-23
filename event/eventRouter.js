@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { isValidForPost, isValidForPatch, isValidForGet, isValidForDelete } = require("./utilities.js");
+const { isValidForPost, isValidForPatch, isValidForGet, isValidForDelete, isValidForGetByFilter } = require("./utilities.js");
 const Event = require("./eventModel");
 const Class = require('../class/classModel')
 
@@ -77,4 +77,20 @@ router.get('/:eventId', async (req, res) => {
     }
 })
 
+
+router.get('/filter/:filter/:target', async (req, res) => {
+    try {
+        const [ filter, target ] = [ req.params.filter, req.params.target ]
+        const [ statusCode, payload ] = await isValidForGetByFilter(filter, target);
+        if (statusCode === 200) {
+            Event.findBy(filter, target)
+            .then((response) => res.status(statusCode).json(response))
+            .catch((error) => res.status(statusCode).json({ message: error.message }));
+        } else {
+            res.status(statusCode).json({message: payload})
+        }
+    } catch (error) {
+        throw error
+    }
+})
 module.exports = router;

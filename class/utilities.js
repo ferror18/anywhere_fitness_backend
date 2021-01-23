@@ -82,7 +82,7 @@ module.exports.isValidForGet = async function (credentials) {
   }
 }
 
-module.exports.isValidForGetByFilter = async function (filter, target ) {
+module.exports.isValidForGetByFilter = async function (filter, target) {
   const validFilters = [
     "title",
     "description",
