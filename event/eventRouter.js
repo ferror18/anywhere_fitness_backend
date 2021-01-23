@@ -8,7 +8,6 @@ router.post('/', async (req, res) => {
     const requestData = req.body
     const [ statusCode, payload ] = await isValidForPost(requestData)
         if (statusCode === 200) {
-            //Find class
             Event.add(payload)
             .then(response => {
                 Class.updateEnrolled(payload.classId, 1)

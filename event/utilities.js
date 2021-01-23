@@ -43,10 +43,13 @@ module.exports.isValidForPost = async function (credentials) {
   if (!user) {
     return [400, "User does not exist"]
   }
-  const evt = await Event.findBy('userId', credentials.userId)
-  console.log(evt.length,evt, credentials.classId);
-  if (evt.length > 0) {
-    if (evt[0].classId === credentials.classId) {
+  const matchingEvents = await Event.findBy('userId', credentials.userId)
+  if (matchingEvents.length > 0) {
+    // console.log(matchingEvents.every(e => {
+    //   console.log(matchingEvents.length,'--', e.classId, credentials.classId, e.classId === credentials.classId,matchingEvents);
+    //   return e.classId === credentials.classId}
+    //   ))
+    if (matchingEvents.some(e => e.classId === credentials.classId)) {
       return [400, "User is already enrolled in that class"]
     }
   }
@@ -95,9 +98,9 @@ module.exports.isValidForDelete = async function (credentials) {
   } if (!Number.isInteger(credentials) || !Number.isSafeInteger(credentials)) {
     return [ 400, "Invalid format" ]
   } 
-  const cls = await Class.findById(credentials);
+  const cls = await Event.findById(credentials);
   if (!cls) {
-    return [ 400, "Class does not exist"]
+    return [ 400, "Event does not exist"]
   }else {
     return [ 200, credentials];
   }
