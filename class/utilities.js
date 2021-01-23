@@ -1,12 +1,17 @@
-const bcryptjs = require("bcryptjs");
 const userData = require('../user/userData/userDataModel')
 const Class = require('./classModel')
-const hrEnu = [1,2,3,4,5,6,7,8,9,10,11,12];
-const hrPer = ['AM', 'PM']
-const dayEnu = [0,1,2,3,4,5,6]
+  const hrEnu = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+  const mnEnu = [
+    0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11,
+   12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+   24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+   36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+   48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59
+ ]
+  const dayEnu = [0,1,2,3,4,5,6]
 
 
-module.exports.enu = {hrEnu,hrPer,dayEnu,}
+module.exports.enu = {hrEnu,mnEnu,dayEnu,}
 
 module.exports.isValidForPost = async function (credentials) {
   let missingField = false
@@ -17,13 +22,15 @@ module.exports.isValidForPost = async function (credentials) {
     "day",
     "start",
     "end",
-    "startHper",
-    "endHper"
+    "startM",
+    "endM"
   ]
   const turnToNum = [ ,
     "start",
     "end",
-    "owner"
+    "owner",
+    "startM",
+    "endM"
   ]
 
   turnToNum.forEach(field => credentials[field] = Number(credentials[field]))
@@ -47,11 +54,11 @@ module.exports.isValidForPost = async function (credentials) {
   }if (!dayEnu.includes(credentials.day)) {
     console.log(credentials.day);
     return [400, `Day must be one of '${dayEnu}' where 1 = Monday etc`]
-  }if (!hrPer.includes(credentials.startHper) || !hrPer.includes(credentials.endHper)) {
-    console.log(credentials.startHper);
-    return [400, `starHper or endHper must be one of '${hrPer}'`]
+  }if (!mnEnu.includes(credentials.startM) || !mnEnu.includes(credentials.endM)) {
+    console.log(credentials.startM);
+    return [400, `startM or endM must be one of '${mnEnu}'`]
   }if (!hrEnu.includes(credentials.end) || !hrEnu.includes(credentials.start)) {
-    console.log(credentials.startHper);
+    console.log(credentials.startM);
     return [400, `start and end must be one of '${hrEnu}'`]
   }
   const userDataFromdb = await userData.findById(credentials.owner)
@@ -90,8 +97,8 @@ module.exports.isValidForGetByFilter = async function (filter, target) {
     "day",
     "start",
     "end",
-    "startHper",
-    "endHper"
+    "startM",
+    "endM"
   ]
   const turnToNum = [ 
     "classId",
@@ -128,8 +135,8 @@ module.exports.isValidForPatch = async function (credentials, userId) {
     return [ 400, "userId is not a valid integer" ]
   }if (dayEnu.includes(credentials.day)) {
     return [400, `Day must be one of ${dayEnu} - 1 = Monday`]
-  }if (hrPer.includes(credentials.startHper) || hrPer.includes(credentials.endHper)) {
-    return [400, `starHper or endHper must be one of ${hrPer}`]
+  }if (mnEnu.includes(credentials.startM) || mnEnu.includes(credentials.endM)) {
+    return [400, `starHper or endM must be one of ${mnEnu}`]
   }if (hrEnu.includes(credentials.end)) {
     return [400, `start and end must be one of ${hrEnu}`]
   }
