@@ -32,6 +32,8 @@ exports.up = function(knex) {
       //foreign
       table.integer('classId').references('class.classId').unsigned().notNullable().onDelete('CASCADE')
       table.integer('userId').references('userData.userId').unsigned().notNullable().onDelete('CASCADE')
+      //Else
+      table.timestamps(true, true)
 
   })
 };
