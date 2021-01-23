@@ -1,3 +1,4 @@
+const { leftOuterJoin } = require('../data/dbConfig.js')
 const db = require('../data/dbConfig.js')
 const tbname = 'event'
 module.exports = {
@@ -36,10 +37,10 @@ async function findById(eventId) {
         "event_updated_at": result.event_updated_at,
         user: {
           "userId": result.userId,
-         "classId": result.classId
+          "email": result.email
         },
         class: {
-          "email": result.email,
+         "classId": result.classId,
           "title": result.title,
           "description": result.description,
           "start": result.start,
@@ -65,22 +66,22 @@ async function findBy(filter, target) {
   .select('event.eventId', 
   'event.created_at as event_created_at', 
   'event.updated_at as event_updated_at',
-  'userCredentials.userId', 
-  'class.classId',
+  'event.userId', 
+  'event.classId',
   'userCredentials.email', 
   'class.*')
   .where(`event.${filter}`, target)
-  return result.map(e => {
+  return await result.map(e => {
     return {
       "eventId": e.eventId,
       "event_created_at": e.event_created_at,
       "event_updated_at": e.event_updated_at,
       user: {
         "userId": e.userId,
-       "classId": e.classId
+        "email": e.email
       },
       class: {
-        "email": e.email,
+       "classId": e.classId,
         "title": e.title,
         "description": e.description,
         "start": e.start,

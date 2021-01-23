@@ -45,7 +45,7 @@ module.exports.isValidForPost = async function (credentials) {
   }
   const matchingEvents = await Event.findBy('userId', credentials.userId)
   if (matchingEvents.length > 0) {
-    if (matchingEvents.some(e => e.classId === credentials.classId)) {
+    if (matchingEvents.some(e => e.class.classId === credentials.classId)) {
       return [400, "User is already enrolled in that class"]
     }
   }
@@ -61,8 +61,34 @@ module.exports.isValidForPost = async function (credentials) {
   }
 }
 
-module.exports.isValidForGetByFilter = async function(filter, target) {
-  return [ 200, "succes"]
+module.exports.isValidForGetByFilter = async function (filter, target) {
+  const validFilters = [
+    "eventId",
+    "classId",
+    "userId"
+  ]
+  const turnToNum = [ 
+    "eventId",
+    "classId",
+    "userId"
+  ]
+  if (filter === null || filter === undefined) { //Check filter is not null or undefined
+    return [ 400, 'No filter provided']
+  }if (target === null || target === undefined) {//Check target is not null or undefined
+    return [ 400, 'No target provided']
+  }if (!validFilters.includes(filter)) { //Check filter is a valid filter
+    return [ 400, `Invalid filter: ${filter}.  Valid filters --> '${validFilters}'`]
+  }if (turnToNum.includes(filter)) { //Check if target 'should' be an integer
+    target = Number(target)
+    if (!Number.isInteger(target) || !Number.isSafeInteger(target)) { //Check that target actually is an integer
+      return [ 400, `${filter} is not a valid Integer`]
+    }
+  } else {
+    if (typeof target !== 'string') {
+      return [ 400, `${filter} type values should be strings`]
+    }
+  }
+    return [ 200, 'Succes']
 }
 
 module.exports.isValidForPatch = async function (credentials, userId) {

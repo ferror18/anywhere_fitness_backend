@@ -105,7 +105,9 @@ module.exports.isValidForGetByFilter = async function (filter, target) {
     "owner",
     "day",
     "start",
-    "end"
+    "end",
+    "startM",
+    "endM"
   ]
   if (filter === null || filter === undefined) { //Check filter is not null or undefined
     return [ 400, 'No filter provided']
@@ -113,7 +115,7 @@ module.exports.isValidForGetByFilter = async function (filter, target) {
     return [ 400, 'No target provided']
   }if (!validFilters.includes(filter)) { //Check filter is a valid filter
     return [ 400, `Invalid filter: ${filter}.  Valid filters --> '${validFilters}'`]
-  }if (!turnToNum.includes(filter)) { //Check if target 'should' be an integer
+  }if (turnToNum.includes(filter)) { //Check if target 'should' be an integer
     target = Number(target)
     if (!Number.isInteger(target) || !Number.isSafeInteger(target)) { //Check that target actually is an integer
       return [ 400, `${filter} is not a valid Integer`]
