@@ -36,28 +36,36 @@ module.exports.isValidForRegister = function (credentials, userMatch) {
   }
 }
 
-module.exports.isValidForDelete = async function (credentials, userId) {
+module.exports.isValidForDelete = async function (credentials, receivedJwt) {
+  if (!receivedJwt) {
+    return [ 400, "Missing Json Web Token"]
+  }
+  const { subject } = await jwt.verify(receivedJwt, SECRET);
   if (credentials === null || credentials === undefined) {
-    return [ 400, "Password is required to delete" ]
+    return [ 400, "Password is required to delete", subject ]
   } if (!credentials.password) {
-    return [ 400, "Password is required to delete" ]
+    return [ 400, "Password is required to delete", subject ]
   } if (typeof credentials.password  !== 'string') {
-    return [ 400, "Invalid format" ]
+    return [ 400, "Invalid format", subject]
   } 
-  const user = await User.findById(userId);
+  const user = await User.findById(subject);
   if (!user) {
-    return [ 400, "User does not exist"]
+    return [ 400, "User does not exist", subject]
   } 
   const isCorrectPassword = bcryptjs.compareSync(credentials.password, user.password)
   if (!isCorrectPassword) {
-    console.log('iscor',isCorrectPassword, user);
-    return [ 400, "Invalid credentials"]
+    return [ 400, "Invalid credentials", subject]
   } else {
-    return [ 200, credentials];
+    return [ 200, credentials, subject];
   }
 }
 
-module.exports.isValidForPatch = async function (credentials, userId) {
+module.exports.isValidForPatch = async function (credentials, receivedJwt) {
+  if (!receivedJwt) {
+    return [ 400, "Missing Json Web Token"]
+  }
+  const { subject } = await jwt.verify(receivedJwt, SECRET);
+  const userId = subject
   if (credentials === null || credentials === undefined || (Object.keys(credentials).length === 0 && credentials.constructor === Object)) {
     return [ 400, "No changes requested" ]
   } if (userId === null || userId === undefined) {
@@ -69,7 +77,23 @@ module.exports.isValidForPatch = async function (credentials, userId) {
   if (!user) {
     return [ 400, "User does not exist"]
   } else {
-    return [ 200, "Update succesfull"];
+    return [ 200, "Update succesfull", userId];
+  }
+}
+
+module.exports.isValidForCheckEmail = async function (email) {
+  if (email === undefined || email === null) {
+    return [ 400, "Email is missing"]
+  } if (typeof email !== 'string') {
+    return [ 400, 'Email should be a string']
+  } if (!email.includes('@') || !email.includes('.')) {
+    return [ 400, "Email is missing '@' or '.'"]
+  }
+  const matchingEvents = await User.findBy('email', email)
+  if (matchingEvents.length) {
+    return [200, false]
+  } else {
+    return [200 , true]
   }
 }
 

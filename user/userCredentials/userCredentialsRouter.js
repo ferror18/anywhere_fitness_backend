@@ -1,11 +1,8 @@
 const bcryptjs = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-
 const router = require("express").Router();
 
 const User = require("./userCredentialsModel.js");
-const { isValidForRegister, isValidForLogin, makeJwt, isValidForDelete, isValidForPatch } = require("./utilities");
-const SECRET = process.env.JWT_SECRET
+const { isValidForRegister, isValidForLogin, makeJwt, isValidForDelete, isValidForPatch, isValidForCheckEmail } = require("./utilities");
 const ROUNDS = Number(process.env.BCRYPT_ROUNDS)
 
 router.post("/register", async (req, res) => {
@@ -20,13 +17,25 @@ router.post("/register", async (req, res) => {
           .json({ message: "Account created succesfully", user: newUser});
     } else {
       await res.status(statusCode).json({ message: payload });
-
-    //   console.log(await User.findBy({email: credentials.email}));
     }
   } catch (error) {
-    console.log(error);
+    throw error
   }
 });
+
+router.post("/checkemail", async (req, res) => {
+  try {
+    const email = req.body.email
+    const [ statusCode, payload ] = await isValidForCheckEmail(email)
+    if (statusCode === 200) {
+      res.status(statusCode).json(payload)
+    } else {
+      res.status(statusCode).json(payload)
+    }
+  } catch (error) {
+    throw error
+  }
+})
 
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
@@ -58,15 +67,14 @@ router.post("/login", (req, res) => {
 
 router.patch("/cred", async (req, res) => {
   try {
-    const decoded = await jwt.verify(req.headers.authorization, SECRET);
-    const payload = req.body;
+    const [payload, receivedJwt] = [req.body, req.headers.authorization];
     //validate
-    const [ statusCode, message ] = await isValidForPatch(payload, decoded.subject)
+    const [ statusCode, message, userId ] = await isValidForPatch(payload, receivedJwt)
     if (statusCode === 200) {
       //hash password
       payload.password = bcryptjs.hashSync(payload.password, ROUNDS);
       //Make updates
-      User.update({ updates: payload, userId: decoded.subject })
+      User.update({ updates: payload, userId: userId })
         .then((response) => res.status(statusCode).json({message:message, data: response}))
         .catch((error) => res.status(statusCode).json({ message: error.message }));
     } else {
@@ -78,10 +86,10 @@ router.patch("/cred", async (req, res) => {
 });
 
 router.delete("/cred", async (req, res) => {
-  const decoded = await jwt.verify(req.headers.authorization, SECRET);
-  const [statusCode, payload] = await isValidForDelete(req.body, decoded.subject);
+  const receivedJwt = req.headers.authorization
+  const [statusCode, payload, userId] = await isValidForDelete(req.body, receivedJwt);
     if (statusCode === 200) {
-  User.remove(decoded.subject)
+  User.remove(userId)
     .then((response) =>
       res.status(statusCode).json({ message: "success", count: response })
     )
