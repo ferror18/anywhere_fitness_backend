@@ -81,6 +81,22 @@ module.exports.isValidForPatch = async function (credentials, receivedJwt) {
   }
 }
 
+module.exports.isValidForCheckEmail = async function (email) {
+  if (email === undefined || email === null) {
+    return [ 400, "Email is missing"]
+  } if (typeof email !== 'string') {
+    return [ 400, 'Email should be a string']
+  } if (!email.includes('@') || !email.includes('.')) {
+    return [ 400, "Email is missing '@' or '.'"]
+  }
+  const matchingEvents = await User.findBy('email', email)
+  if (matchingEvents.length) {
+    return [200, false]
+  } else {
+    return [200 , true]
+  }
+}
+
 module.exports.makeJwt = function (user) {
   const payload = {
     subject: user.userId,

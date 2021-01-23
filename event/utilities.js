@@ -45,10 +45,6 @@ module.exports.isValidForPost = async function (credentials) {
   }
   const matchingEvents = await Event.findBy('userId', credentials.userId)
   if (matchingEvents.length > 0) {
-    // console.log(matchingEvents.every(e => {
-    //   console.log(matchingEvents.length,'--', e.classId, credentials.classId, e.classId === credentials.classId,matchingEvents);
-    //   return e.classId === credentials.classId}
-    //   ))
     if (matchingEvents.some(e => e.classId === credentials.classId)) {
       return [400, "User is already enrolled in that class"]
     }

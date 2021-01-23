@@ -2,7 +2,7 @@ const bcryptjs = require("bcryptjs");
 const router = require("express").Router();
 
 const User = require("./userCredentialsModel.js");
-const { isValidForRegister, isValidForLogin, makeJwt, isValidForDelete, isValidForPatch } = require("./utilities");
+const { isValidForRegister, isValidForLogin, makeJwt, isValidForDelete, isValidForPatch, isValidForCheckEmail } = require("./utilities");
 const ROUNDS = Number(process.env.BCRYPT_ROUNDS)
 
 router.post("/register", async (req, res) => {
@@ -22,6 +22,20 @@ router.post("/register", async (req, res) => {
     throw error
   }
 });
+
+router.post("/checkemail", async (req, res) => {
+  try {
+    const email = req.body.email
+    const [ statusCode, payload ] = await isValidForCheckEmail(email)
+    if (statusCode === 200) {
+      res.status(statusCode).json(payload)
+    } else {
+      res.status(statusCode).json(payload)
+    }
+  } catch (error) {
+    throw error
+  }
+})
 
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
