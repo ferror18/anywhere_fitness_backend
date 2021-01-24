@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "knex migrate:latest && node server.js",
     "dev": "nodemon -r dotenv/config server.js",
     "dev-resetdb": "knex migrate:rollback && knex migrate:rollback && knex migrate:rollback && knex migrate:latest && npm run dev"
   },
