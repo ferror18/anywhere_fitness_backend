@@ -51,7 +51,7 @@ function genClasses() {
       "title": faker.random.words(7),
       "description": faker.random.words(40),
       "owner": faker.random.number({min:1,max:instructorUsers}),
-      "day": faker.random.number({min:1,max:7}),
+      "day": faker.random.number(6),
       "start": faker.random.number(23),
       "end": faker.random.number(23),
       "startM": faker.random.number(59),
