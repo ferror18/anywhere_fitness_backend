@@ -1,6 +1,6 @@
 const faker = require('faker')
-const verbose = false
-const totalUsers = 10
+const verbose = process.env.SEED_VERBOSE || false
+const totalUsers = process.env.NUM_OF_SEED_USERS || 10
 const instructorUsers = totalUsers * 0.2
 const usersEnrolled = totalUsers * 0.95
 const classes = instructorUsers*2
