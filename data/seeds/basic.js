@@ -1,0 +1,116 @@
+const verbose = true
+const { fake } = require('faker')
+const faker = require('faker')
+const totalUsers = 7
+const instructorUsers = totalUsers * 0.1
+const usersEnrolled = totalUsers * 0.95
+const classes = instructorUsers*3
+
+
+function genCred() {
+  const fakeCred = []
+  for (let i = 0; i < totalUsers; i++) {
+    fakeCred.push({
+      email: faker.internet.email(),
+      password: faker.random.words(1)
+    })
+    if (verbose) {
+      console.log('Credentails -->', fakeCred[i]);
+    }
+  }
+  return fakeCred
+}
+
+function genData() {
+  const fakeData = []
+  for (let i = 0; i < totalUsers; i++) {
+    const fn = faker.name.firstName()
+    const ln = faker.name.firstName()
+    fakeData.push({
+      "userId": i+1,
+      "firstName": fn,
+      "lastName": ln,
+      "displayedName": fn + ' ' + ln,
+      "phone": faker.phone.phoneNumberFormat(1),
+      "address": faker.address.streetAddress(),
+      dob: faker.date.past(15, "1999-07-09"),
+      "isInstructor": (true)?(i<totalUsers*.1):false
+    })
+    if (verbose) {
+      console.log('user Data -->', fakeData[i]);
+    }
+  }
+  return fakeData
+
+}
+
+function genClasses() {
+  const fakeClasses = []
+  for (let i = 0; i < classes; i++) {
+    fakeClasses.push({
+      "title": faker.random.words(7),
+      "description": faker.random.words(40),
+      "owner": faker.random.number({min:1,max:instructorUsers}),
+      "day": faker.random.number({min:1,max:7}),
+      "start": faker.random.number(23),
+      "end": faker.random.number(23),
+      "startM": faker.random.number(59),
+      "endM": faker.random.number(59),
+      "lat": faker.random.number({min:-90, max:90, precision:6}),
+      "lon": faker.random.number({min:-180, max:180, precision:7}),
+      cost: faker.random.number({min:0, max:999, precision:2})
+    })
+    if (verbose) {
+      console.log('Class -->', fakeClasses[i]);
+    }
+  }
+}
+
+function genEvent() {
+  const fakeEvents = []
+  const enrolledRecord = {}
+  let i = 0
+  // Everyone enrolled in class 1
+  for (i; i < usersEnrolled; i++) {
+    fakeEvents.push({classId: 1,userId: i})
+    if (verbose) {
+      console.log('Event details -->', fakeEvents[i]);
+    }
+  }
+  // Random enrollements to other classes
+  for (i; i < usersEnrolled*2; i++) {
+    let newEvent = {
+      "classId": faker.random.number({min:2, max:classes}),
+      "userId": faker.random.number({min:1, max:totalUsers})
+    }
+    
+    if (enrolledRecord[`userId${newEvent.userId}classId${newEvent.classId}`]) {
+      i--;
+      continue
+    }
+    enrolledRecord[`userId${newEvent.userId}classId${newEvent.classId}`] = true
+
+    fakeEvents.push(newEvent)
+    if (verbose) {
+      console.log('Event details -->', fakeEvents[i]);
+    }
+  }
+  return fakeEvents
+}
+
+exports.seed = function(knex) {
+  genCred()
+  genData()
+  genClasses()
+  genEvent()
+  // Deletes ALL existing entries
+  // return knex('table_name').del()
+  //   .then(function () {
+  //     // Inserts seed entries
+  //     return knex('table_name').insert([
+  //       {id: 1, colName: 'rowValue1'},
+  //       {id: 2, colName: 'rowValue2'},
+  //       {id: 3, colName: 'rowValue3'}
+  //     ]);
+  //   });
+};
