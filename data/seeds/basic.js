@@ -1,10 +1,9 @@
-const verbose = true
-const { fake } = require('faker')
 const faker = require('faker')
-const totalUsers = 7
-const instructorUsers = totalUsers * 0.1
+const verbose = false
+const totalUsers = 10
+const instructorUsers = totalUsers * 0.2
 const usersEnrolled = totalUsers * 0.95
-const classes = instructorUsers*3
+const classes = instructorUsers*2
 
 
 function genCred() {
@@ -34,7 +33,8 @@ function genData() {
       "phone": faker.phone.phoneNumberFormat(1),
       "address": faker.address.streetAddress(),
       dob: faker.date.past(15, "1999-07-09"),
-      "isInstructor": (true)?(i<totalUsers*.1):false
+      bio: faker.random.words(50),
+      "isInstructor": (true)?(i<instructorUsers):false
     })
     if (verbose) {
       console.log('user Data -->', fakeData[i]);
@@ -64,6 +64,7 @@ function genClasses() {
       console.log('Class -->', fakeClasses[i]);
     }
   }
+  return fakeClasses
 }
 
 function genEvent() {
@@ -72,9 +73,9 @@ function genEvent() {
   let i = 0
   // Everyone enrolled in class 1
   for (i; i < usersEnrolled; i++) {
-    fakeEvents.push({classId: 1,userId: i})
+    fakeEvents.push({classId: 1,userId: i+1})
     if (verbose) {
-      console.log('Event details -->', fakeEvents[i]);
+      console.log('Event details -->', fakeEvents[i], 'i', i);
     }
   }
   // Random enrollements to other classes
@@ -92,25 +93,21 @@ function genEvent() {
 
     fakeEvents.push(newEvent)
     if (verbose) {
-      console.log('Event details -->', fakeEvents[i]);
+      console.log('Event details -->', fakeEvents[i], 'i', i);
     }
   }
   return fakeEvents
 }
 
 exports.seed = function(knex) {
-  genCred()
-  genData()
-  genClasses()
-  genEvent()
-  // Deletes ALL existing entries
-  // return knex('table_name').del()
-  //   .then(function () {
-  //     // Inserts seed entries
-  //     return knex('table_name').insert([
-  //       {id: 1, colName: 'rowValue1'},
-  //       {id: 2, colName: 'rowValue2'},
-  //       {id: 3, colName: 'rowValue3'}
-  //     ]);
-  //   });
+  return knex('userCredentials').insert(genCred())
+  .then(() => {
+    return knex('userData').insert(genData())
+  })
+  .then(() => {
+    return knex('class').insert(genClasses())
+  })
+  .then(() => {
+    return knex('event').insert(genEvent())
+  })
 };

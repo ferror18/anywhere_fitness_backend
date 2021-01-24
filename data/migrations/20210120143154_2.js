@@ -8,7 +8,7 @@ exports.up = function(knex) {
       table.date('dob').nullable()
       table.text('bio').nullable()
       table.string('imageUrl').defaultTo('https://picsum.photos/400')
-      table.string('phone', 10).notNullable()
+      table.string('phone', 14).notNullable()
       table.string('address').nullable()
       table.boolean('isInstructor').notNullable()
       table.timestamps(true, true)
