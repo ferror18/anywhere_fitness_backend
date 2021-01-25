@@ -1,11 +1,11 @@
 const faker = require('faker')
-const verbose = Number(process.env.SEED_VERBOSE)
-const totalUsers = Number(process.env.NUM_OF_SEED_USERS)
+const verbose = false
+const totalUsers = process.env.NUM_OF_SEED_USERS || 7000
 let safeTotalUsers
-if (totalUsers>7000) {
+if (Number(totalUsers)>7000) {
   safeTotalUsers = 7000
 } else {
-  safeTotalUsers = totalUsers
+  safeTotalUsers = Number(totalUsers)
 }
 console.log(totalUsers,safeTotalUsers);
 const instructorUsers = safeTotalUsers * 0.2
