@@ -20,11 +20,7 @@ router.post('/', async (req, res) => {
 })
 
 router.delete("/", (req, res) => {
-    User.remove(req.body.userId)
-      .then((response) =>
-        res.status(200).json({ message: "success", count: response })
-      )
-      .catch((error) => res.json({ message: error.message }));
+        res.status(400).json({ message: "Failed, to delete UserData pls delete userCredentials Instead"})
   });
 
 router.patch("/:userId", async (req, res) => {
