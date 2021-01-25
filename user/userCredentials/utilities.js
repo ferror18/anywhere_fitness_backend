@@ -98,6 +98,7 @@ module.exports.isValidForCheckEmail = async function (email) {
 }
 
 module.exports.makeJwt = function (user) {
+  console.log(SECRET);
   const payload = {
     subject: user.userId,
   };

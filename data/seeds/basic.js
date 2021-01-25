@@ -1,16 +1,23 @@
 const faker = require('faker')
-const verbose = process.env.SEED_VERBOSE || false
-const totalUsers = process.env.NUM_OF_SEED_USERS || 10
-const instructorUsers = totalUsers * 0.2
-const usersEnrolled = totalUsers * 0.95
+const verbose = Number(process.env.SEED_VERBOSE)
+const totalUsers = Number(process.env.NUM_OF_SEED_USERS)
+let safeTotalUsers
+if (totalUsers>7000) {
+  safeTotalUsers = 7000
+} else {
+  safeTotalUsers = totalUsers
+}
+console.log(totalUsers,safeTotalUsers);
+const instructorUsers = safeTotalUsers * 0.2
+const usersEnrolled = safeTotalUsers * 0.95
 const classes = instructorUsers*2
 
 
 function genCred() {
   const fakeCred = []
-  for (let i = 0; i < totalUsers; i++) {
+  for (let i = 0; i < safeTotalUsers; i++) {
     fakeCred.push({
-      email: faker.internet.email(),
+      email: faker.unique(faker.internet.email),
       password: faker.random.words(1)
     })
     if (verbose) {
@@ -22,7 +29,7 @@ function genCred() {
 
 function genData() {
   const fakeData = []
-  for (let i = 0; i < totalUsers; i++) {
+  for (let i = 0; i < safeTotalUsers; i++) {
     const fn = faker.name.firstName()
     const ln = faker.name.firstName()
     fakeData.push({
@@ -56,9 +63,9 @@ function genClasses() {
       "end": faker.random.number(23),
       "startM": faker.random.number(59),
       "endM": faker.random.number(59),
-      "lat": faker.random.number({min:-90, max:90, precision:6}),
-      "lon": faker.random.number({min:-180, max:180, precision:7}),
-      cost: faker.random.number({min:0, max:999, precision:2})
+      "lat": faker.random.number({min:-90, max:90}),
+      "lon": faker.random.number({min:-180, max:180}),
+      cost: faker.random.number({min:0, max:999})
     })
     if (verbose) {
       console.log('Class -->', fakeClasses[i]);
@@ -82,7 +89,7 @@ function genEvent() {
   for (i; i < usersEnrolled*2; i++) {
     let newEvent = {
       "classId": faker.random.number({min:2, max:classes}),
-      "userId": faker.random.number({min:1, max:totalUsers})
+      "userId": faker.random.number({min:1, max:safeTotalUsers})
     }
     
     if (enrolledRecord[`userId${newEvent.userId}classId${newEvent.classId}`]) {
