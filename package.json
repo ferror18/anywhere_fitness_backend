@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run resetdb && node server.js",
+    "start": "node server.js",
     "localStart": "npm run resetdb && node server.js",
     "dev": "nodemon -r dotenv/config server.js",
     "resetdb": "for i in {1..4}; do knex migrate:rollback; done && npm run migSeed",
