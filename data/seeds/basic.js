@@ -1,5 +1,6 @@
 //Modeules
 const faker = require('faker')
+require('dotenv').config()
 //Flags
 const verbose = !!Number(process.env.SEED_VERBOSE)?!!Number(process.env.SEED_VERBOSE): false
 const showData = !!Number(process.env.SEED_SHOW_DATA)?!!Number(process.env.SEED_SHOW_DATA): false
