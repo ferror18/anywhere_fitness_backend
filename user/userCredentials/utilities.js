@@ -98,6 +98,7 @@ module.exports.isValidForCheckEmail = async function (email) {
 }
 
 module.exports.makeJwt = function (user) {
+  console.log(SECRET);
   const payload = {
     subject: user.userId,
   };
@@ -105,4 +106,11 @@ module.exports.makeJwt = function (user) {
     expiresIn: "24h",
   };
   return jwt.sign(payload, SECRET, options);
+}
+
+
+module.exports.verifyToken = function(token) {
+  return jwt.verify(token, SECRET_KEY, (err, decode) =>
+    decode !== undefined ? decode : err
+  );
 }
