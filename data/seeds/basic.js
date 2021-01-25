@@ -1,13 +1,11 @@
 //Modeules
 const faker = require('faker')
-const { checkout } = require('../../class/classRouter')
-require('dotenv').config()
 //Flags
 const verbose = !!Number(process.env.SEED_VERBOSE)?!!Number(process.env.SEED_VERBOSE): false
 const showData = !!Number(process.env.SEED_SHOW_DATA)?!!Number(process.env.SEED_SHOW_DATA): false
 //Other Environment Var
-const limit = Number(process.env.SEED_LIMIT) || 1000
-const chunkSize = Number(process.env.SEED_CHUNK_SIZE)|| 7000
+const limit = Number(process.env.SEED_LIMIT) || 5000
+const chunkSize = Number(process.env.SEED_CHUNK_SIZE)|| 5000
 const totalUsers = Number(process.env.SEED_USER_AMOUNT_TO_CREATE) || 10000
 //Seed Parameters
 const safeTotalUsers = totalUsers > limit ? limit : totalUsers
@@ -117,7 +115,11 @@ function genEvent() {
       console.log(`Events ${Math.floor((i+1)/(totalEvents)*100)}% complete.`);
     }
   }
-  console.log(`Totals--> User Credentials:${Math.ceil(safeTotalUsers)} | User Data:${Math.ceil(safeTotalUsers)} | Classes:${Math.ceil(classes)} | Event:${Math.ceil(totalEvents)}`);
+  if (showData) {
+    console.log(`Totals--> \nUser Credentials:${Math.ceil(safeTotalUsers)}\nUser Data:${Math.ceil(safeTotalUsers)}\nClasses:${Math.ceil(classes)}\nEvent:${Math.ceil(totalEvents)}\nChuck Size:${chunkSize}\nLimit:${limit}\nTotal Users${totalUsers}`);
+  } else {
+    console.log(`Totals--> User Credentials:${Math.ceil(safeTotalUsers)} | User Data:${Math.ceil(safeTotalUsers)} | Classes:${Math.ceil(classes)} | Event:${Math.ceil(totalEvents)}`);
+  }
   return fakeEvents
 }
 
