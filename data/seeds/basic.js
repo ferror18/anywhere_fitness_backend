@@ -1,11 +1,11 @@
 //Modeules
 const faker = require('faker')
-require('dotenv').config()
+// require('dotenv').config()
 //Flags
 const verbose = !!Number(process.env.SEED_VERBOSE)?!!Number(process.env.SEED_VERBOSE): true
 const showData = !!Number(process.env.SEED_SHOW_DATA)?!!Number(process.env.SEED_SHOW_DATA): false
 //Other Environment Var
-const limit = Number(process.env.SEED_LIMIT) || 5000
+const limit = Number(process.env.SEED_LIMIT) || 2000
 const chunkSize = Number(process.env.SEED_CHUNK_SIZE)|| 5000
 const totalUsers = Number(process.env.SEED_USER_AMOUNT_TO_CREATE) || 100
 //Seed Parameters
