@@ -43,22 +43,7 @@ router.delete("/", async (req, res) => {
     }
   });
 
-router.patch("/:eventId", async (req, res) => {
-    try {
-        const [ receivedData, eventId ] = [ req.body, Number(req.params.eventId)]
-        const [ statusCode, message ] = await isValidForPatch(receivedData, eventId)
-        if (statusCode === 200) {
-            const changes = {updates: receivedData,  eventId: eventId}
-            Event.update(changes)
-                .then((response) => res.status(200).json(response))
-                .catch((error) => res.json({ message: error.message }));
-        } else {
-            res.status(statusCode).json({message: message})
-        }
-    } catch (error) {
-        throw error
-    }
-});
+router.patch("/:eventId", (req, res) => res.status(400).json({message: 'Failure, events are not updateable, delete and create it a  new one instead'}));
 
 router.get('/:eventId', async (req, res) => {
     try {

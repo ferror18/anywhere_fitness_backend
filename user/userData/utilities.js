@@ -68,22 +68,22 @@ module.exports.isValidForPatch = async function (credentials, userId) {
 }
 
 
-module.exports.isValidForDelete = async function (credentials, userId) {
-  if (credentials === null || credentials === undefined) {
-    return [ 400, "Password is required to delete" ]
-  } if (!credentials.password) {
-    return [ 400, "Password is required to delete" ]
-  } if (typeof credentials.password  !== 'string') {
-    return [ 400, "Invalid format" ]
-  } 
-  const user = await userCred.findById(userId);
-  if (!user) {
-    return [ 400, "User does not exist"]
-  } 
-  const isCorrectPassword = bcryptjs.compareSync(credentials.password, user.password)
-  if (!isCorrectPassword) {
-    return [ 400, "Invalid credentials"]
-  } else {
-    return [ 200, credentials];
-  }
-}
+// module.exports.isValidForDelete = async function (credentials, userId) {
+//   if (credentials === null || credentials === undefined) {
+//     return [ 400, "Password is required to delete" ]
+//   } if (!credentials.password) {
+//     return [ 400, "Password is required to delete" ]
+//   } if (typeof credentials.password  !== 'string') {
+//     return [ 400, "Invalid format" ]
+//   } 
+//   const user = await userData.findById(userId);
+//   if (!user) {
+//     return [ 400, "User does not exist"]
+//   } 
+//   const isCorrectPassword = bcryptjs.compareSync(credentials.password, user.password)
+//   if (!isCorrectPassword) {
+//     return [ 400, "Invalid credentials"]
+//   } else {
+//     return [ 200, credentials];
+//   }
+// }
