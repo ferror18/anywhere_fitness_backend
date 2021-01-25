@@ -27,7 +27,7 @@ exports.up = function(knex) {
     //Else
     table.integer('enrolled').defaultTo(0)
     table.decimal('lat', 8, 6)
-    table.decimal('lon', 9, 7)
+    table.decimal('lon', 9, 6)
     table.decimal('cost', 5, 2).defaultTo(0)
     table.string('imageUrl').defaultTo('https://picsum.photos/1200/600')
     table.timestamps(true, true)    
