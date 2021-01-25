@@ -1,16 +1,20 @@
+//Modeules
 const faker = require('faker')
-const verbose = false
-const totalUsers = process.env.NUM_OF_SEED_USERS || 7000
-let safeTotalUsers
-if (Number(totalUsers)>7000) {
-  safeTotalUsers = 7000
-} else {
-  safeTotalUsers = Number(totalUsers)
-}
-console.log(totalUsers,safeTotalUsers);
+const { checkout } = require('../../class/classRouter')
+require('dotenv').config()
+//Flags
+const verbose = !!Number(process.env.SEED_VERBOSE)?!!Number(process.env.SEED_VERBOSE): false
+const showData = !!Number(process.env.SEED_SHOW_DATA)?!!Number(process.env.SEED_SHOW_DATA): false
+//Other Environment Var
+const limit = Number(process.env.SEED_LIMIT) || 1000
+const chunkSize = Number(process.env.SEED_CHUNK_SIZE)|| 7000
+const totalUsers = Number(process.env.SEED_USER_AMOUNT_TO_CREATE) || 10000
+//Seed Parameters
+const safeTotalUsers = totalUsers > limit ? limit : totalUsers
 const instructorUsers = safeTotalUsers * 0.2
 const usersEnrolled = safeTotalUsers * 0.95
 const classes = instructorUsers*2
+const totalEvents = usersEnrolled*2
 
 
 function genCred() {
@@ -20,8 +24,10 @@ function genCred() {
       email: faker.unique(faker.internet.email),
       password: faker.random.words(1)
     })
-    if (verbose) {
-      console.log('Credentails -->', fakeCred[i]);
+    if (showData && verbose) {
+      console.log(`Credentails ${Math.floor((i+1)/safeTotalUsers*100)}% complete. Details -->`,fakeCred[i], `  ${i+1}`);
+    } if (verbose && !showData) {
+      console.log(`Credentails ${Math.floor((i+1)/safeTotalUsers*100)}% complete.`);
     }
   }
   return fakeCred
@@ -43,8 +49,10 @@ function genData() {
       bio: faker.random.words(50),
       "isInstructor": (true)?(i<instructorUsers):false
     })
-    if (verbose) {
-      console.log('user Data -->', fakeData[i]);
+    if (showData && verbose) {
+      console.log(`User Data ${Math.floor((i+1)/safeTotalUsers*100)}% complete. Details -->`,fakeData[i], `  ${i+1}`);
+    } if (verbose && !showData) {
+      console.log(`User Data ${Math.floor((i+1)/safeTotalUsers*100)}% complete.`);
     }
   }
   return fakeData
@@ -67,8 +75,10 @@ function genClasses() {
       "lon": faker.random.number({min:-180, max:180}),
       cost: faker.random.number({min:0, max:999})
     })
-    if (verbose) {
-      console.log('Class -->', fakeClasses[i]);
+    if (showData && verbose) {
+      console.log(`Classes ${Math.floor((i+1)/classes*100)}% complete. Details -->`,fakeClasses[i], `  ${i+1}`);
+    } if (verbose && !showData) {
+      console.log(`Classes ${Math.floor((i+1)/classes*100)}% complete.`);
     }
   }
   return fakeClasses
@@ -81,12 +91,14 @@ function genEvent() {
   // Everyone enrolled in class 1
   for (i; i < usersEnrolled; i++) {
     fakeEvents.push({classId: 1,userId: i+1})
-    if (verbose) {
-      console.log('Event details -->', fakeEvents[i], 'i', i);
+    if (showData && verbose) {
+      console.log(`Events ${Math.floor((i+1)/(totalEvents)*100)}% complete. Details -->`,fakeEvents[i], `  ${i+1}`);
+    } if (verbose && !showData) {
+      console.log(`Events ${Math.floor((i+1)/(totalEvents)*100)}% complete.`);
     }
   }
   // Random enrollements to other classes
-  for (i; i < usersEnrolled*2; i++) {
+  for (i; i < totalEvents; i++) {
     let newEvent = {
       "classId": faker.random.number({min:2, max:classes}),
       "userId": faker.random.number({min:1, max:safeTotalUsers})
@@ -99,22 +111,25 @@ function genEvent() {
     enrolledRecord[`userId${newEvent.userId}classId${newEvent.classId}`] = true
 
     fakeEvents.push(newEvent)
-    if (verbose) {
-      console.log('Event details -->', fakeEvents[i], 'i', i);
+    if (showData && verbose) {
+      console.log(`Events ${Math.floor((i+1)/(totalEvents)*100)}% complete. Details -->`,fakeEvents[i], `  ${i+1}`);
+    } if (verbose && !showData) {
+      console.log(`Events ${Math.floor((i+1)/(totalEvents)*100)}% complete.`);
     }
   }
+  console.log(`Totals--> User Credentials:${Math.ceil(safeTotalUsers)} | User Data:${Math.ceil(safeTotalUsers)} | Classes:${Math.ceil(classes)} | Event:${Math.ceil(totalEvents)}`);
   return fakeEvents
 }
 
 exports.seed = function(knex) {
-  return knex('userCredentials').insert(genCred())
+  return knex.batchInsert('userCredentials', genCred(), chunkSize)
   .then(() => {
-    return knex('userData').insert(genData())
+    return knex.batchInsert('userData', genData(), chunkSize)
   })
   .then(() => {
-    return knex('class').insert(genClasses())
+    return knex.batchInsert('class', genClasses(), chunkSize)
   })
   .then(() => {
-    return knex('event').insert(genEvent())
+    return knex.batchInsert('event', genEvent(), chunkSize)
   })
 };

@@ -107,3 +107,10 @@ module.exports.makeJwt = function (user) {
   };
   return jwt.sign(payload, SECRET, options);
 }
+
+
+module.exports.verifyToken = function(token) {
+  return jwt.verify(token, SECRET_KEY, (err, decode) =>
+    decode !== undefined ? decode : err
+  );
+}
