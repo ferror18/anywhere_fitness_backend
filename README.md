@@ -8,8 +8,8 @@ Reset heroku db
 
 
 ###### On your terminal:
- - []heroku pg:psql -a anywherefitness 
+ - heroku pg:psql -a anywherefitness 
 ###### Then:
- - [] TRUNCATE TABLE event, class, "userData","userCredentials";VACUUM FULL;
+ - TRUNCATE TABLE event, class, "userData","userCredentials";VACUUM FULL;
 ###### Ctrl-C twice and then 
- - []heroku run npm run resetdb -a anywherefitness
+ - heroku run npm run resetdb -a anywherefitness
